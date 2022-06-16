@@ -123,11 +123,16 @@
             chatSocket.onmessage = function(e) {
                 var data = JSON.parse(e.data);
                 if(data["command"] === 'messages'){
+                    data['messages'].reverse()
                     for (var i = 0; i < data['messages'].length; i++) {
                         createMessage(data['messages'][i]);
                     }
+                    var element = document.getElementById('msgs-body');
+                    element.scrollTop = element.scrollHeight;
                 }else if(data["command"] === 'new_message'){
                     createMessage(data["message"])
+                    var element = document.getElementById('msgs-body');
+                    element.scrollTop = element.scrollHeight;
                 }
             };
     
@@ -177,7 +182,11 @@
                 divFtTag.appendChild(spanTag);
                 msgDivTag.appendChild(divFtTag);
                 document.querySelector('#msgs-body').appendChild(msgDivTag);
+
+
+
             }
+            
 
         </script>
         <script src="{%static 'main.js'%}"></script>
