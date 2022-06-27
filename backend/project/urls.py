@@ -16,9 +16,16 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path,include
 from django.conf import settings
+from django_registration.backends.activation.views import RegistrationView #type: ignore
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('chat/', include('chat.urls')),
+    path('', include('chat.urls')),
+    path("accounts/", include("django.contrib.auth.urls")),
+    # path("accounts/profile/", blango_auth.views.profile, name="profile"),
+    path("accounts/register/", RegistrationView.as_view(),
+    name="django_registration_register"),
+    path("accounts/", include("django_registration.backends.activation.urls")),
+    # path("accounts/", include("allauth.urls")),
 ]
 
 if settings.DEBUG:
