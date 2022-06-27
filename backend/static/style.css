@@ -9,6 +9,7 @@ body,html{
 .chat{
     margin-top: auto;
     margin-bottom: auto;
+    
 }
 .card{
     height: 500px;
@@ -222,3 +223,4 @@ background-color: rgba(0,0,0,0.2);
 margin-bottom: 15px !important;
 }
 }
+
