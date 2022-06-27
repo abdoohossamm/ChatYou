@@ -11,7 +11,7 @@ class ChatConsumer(WebsocketConsumer):
 
     def fetch_messages(self, data):
         room = get_object_or_404(Room, name=data['room'])
-        messages = Message.objects.filter(room=room)
+        messages = Message.objects.filter(room=room)[:50]
         content = {
             'command': 'messages',
             'messages': self.messages_to_json(messages),

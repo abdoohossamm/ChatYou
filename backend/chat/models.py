@@ -17,5 +17,3 @@ class Message(models.Model):
     
     def __str__(self):
         return f"{self.user.username[:10]}: {self.content[:10]}"
-    def last_30_msgs():
-        return Message.objects.order_by("-time").all()[:30]
