@@ -41,8 +41,9 @@ create a virtual environment
 cd backend
 python -m venv venv
 ```
+##### activating the virtual environment depends on the OS please serach for it
 
-Install requirements packages
+Install requirements packages after activating the virtual environment
 ```bash
 pip install -r requirements.txt
 ```
