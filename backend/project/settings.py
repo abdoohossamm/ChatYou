@@ -38,10 +38,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'widget_tweaks',
-    'chat',
+    'rest_framework',
     'crispy_forms',
     "debug_toolbar",
     'channels',
+    'oto',
+    'chat',
 ]
 INTERNAL_IPS = ["127.0.0.1"]
 MIDDLEWARE = [

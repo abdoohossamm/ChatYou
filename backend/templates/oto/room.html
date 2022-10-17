@@ -1,0 +1,133 @@
+{%extends 'chat/index.html'%}
+{%load static%}
+{% block chat %}
+<div class="card-footer"></div>
+</div></div>
+<div class="col-md-8 col-xl-6 chat">
+    <div class="card">
+        <div class="card-header msg_head">
+            <div class="d-flex bd-highlight">
+                <div class="img_cont">
+                    <img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg" class="rounded-circle user_img">
+                    <span class="online_icon"></span>
+                </div>
+                <div class="user_info">
+                    <span>{{room_name}}</span>
+                </div>
+            </div>
+            <span id="action_menu_btn"><i class="fas fa-ellipsis-v"></i></span>
+            <div class="action_menu">
+                <ul>
+                    <li><i class="fas fa-user-circle"></i> View profile</li>
+                    <li><i class="fas fa-users"></i> Add to close friends</li>
+                    <li><i class="fas fa-plus"></i> Add to group</li>
+                    <li><i class="fas fa-ban"></i> Block</li>
+                </ul>
+            </div>
+        </div>
+        <div id='msgs-body' class="card-body msg_card_body">
+
+        </div>
+        <div class="card-footer">
+            <div class="input-group">
+                <div class="input-group-append">
+                    <span class="input-group-text attach_btn"><i class="fas fa-paperclip"></i></span>
+                </div>
+                <input type="text" id = "chat-message-input" name="" class="form-control type_msg" placeholder="Type your message...">
+                <div id ="chat-message-submit" class="input-group-append">
+                    <span class="input-group-text send_btn"><i class="fas fa-location-arrow"></i></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+{{ room_name|json_script:"room-name" }}
+{{ username|json_script:"username" }}
+<script>
+    const roomName = JSON.parse(document.getElementById('room-name').textContent);
+    const userName = JSON.parse(document.getElementById('username').textContent);
+    var username = "{{username}}";
+    const chatSocket = new ReconnectingWebSocket(
+        'ws://'
+        + window.location.host
+        + '/ws/chat/'
+        + roomName
+        + '/'
+    );
+    chatSocket.onopen = function(e) {
+        fetchMessage();
+    }
+    chatSocket.onmessage = function(e) {
+        var data = JSON.parse(e.data);
+        if(data["command"] === 'messages'){
+            data['messages'].reverse()
+            for (var i = 0; i < data['messages'].length; i++) {
+                createMessage(data['messages'][i]);
+            }
+            var element = document.getElementById('msgs-body');
+            element.scrollTop = element.scrollHeight;
+        }else if(data["command"] === 'new_message'){
+            createMessage(data["message"])
+            var element = document.getElementById('msgs-body');
+            element.scrollTop = element.scrollHeight;
+        }
+    };
+
+    chatSocket.onclose = function(e) {
+        console.error('Chat socket closed unexpectedly');
+    };
+
+    document.querySelector('#chat-message-input').focus();
+    document.querySelector('#chat-message-input').onkeyup = function(e) {
+        if (e.keyCode === 13) {  // enter, return
+            document.querySelector('#chat-message-submit').click();
+        }
+    };
+
+    document.querySelector('#chat-message-submit').onclick = function(e) {
+        var messageInputDom = document.querySelector('#chat-message-input');
+        var message = messageInputDom.value;
+        chatSocket.send(JSON.stringify({
+            'command': 'new_message',
+            'message': message,
+            'from': "{{username}}",
+            'room': roomName
+        }));
+        messageInputDom.value = '';
+    };
+    function fetchMessage(){
+        chatSocket.send(JSON.stringify(
+            {'command': 'fetch_messages',
+            'room': roomName
+            }
+            ));
+    }
+    function createMessage(data){
+        var message = data.content;
+        var user = data.user;
+        var time = data.time;
+        var msgDivTag = document.createElement('div');
+        var divFtTag = document.createElement('div');
+        var spanTag = document.createElement('span');
+        if (user === username){
+            msgDivTag.className='d-flex justify-content-end mb-4';
+            divFtTag.className = 'msg_cotainer_send';
+            spanTag.className = 'msg_time_send';
+            spanTag.textContent = 'by me'
+        }else{
+            msgDivTag.className='d-flex justify-content-start mb-4';
+            divFtTag.className = 'msg_cotainer';
+            spanTag.className = 'msg_time';
+            spanTag.textContent = "by " + user;
+        }
+        divFtTag.textContent =message;
+        divFtTag.appendChild(spanTag);
+        msgDivTag.appendChild(divFtTag);
+        document.querySelector('#msgs-body').appendChild(msgDivTag);
+    }
+
+</script>
+<script src="{%static 'main.js'%}"></script>
+{% endblock chat %}

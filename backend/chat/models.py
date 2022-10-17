@@ -5,9 +5,10 @@ User = get_user_model()
 
 
 class Room(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     def __str__(self):
         return self.name 
+
 class Message(models.Model):
     user = models.ForeignKey(User, related_name='author', on_delete=models.CASCADE)
     content = models.TextField()
